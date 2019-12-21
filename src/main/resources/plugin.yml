@@ -24,14 +24,24 @@ commands:
     usage: "/addtrunk <Player> <type> <number>"
   anvil:
     permission: treebotrunk.anvil
+    usage: "/anvil"
+    description: "Temporarily Places an Anvil at your feet if the block is clear"
   craft:
     permission: treebotrunk.craft
+    usage: "/craft"
+    description: "Opens a virtual crafting table"
   enchant:
     permission: treebotrunk.enchant
+    usage: "/enchant"
+    description: "Temporarily Places an Anvil at your feet if the block is clear"
   grindstone:
     permission: treebotrunk.grindstone
+    usage: "/grindstone"
+    description: "Temporarily Places an grindstone at your feet if the block is clear"
   stonecutter:
     permission: treebotrunk.stonecutter
+    usage: "/stonecutter"
+    description: "Temporarily Places an stonecutter at your feet if the block is clear"
 
 permissions:
   treebotrunk.belt.open:
