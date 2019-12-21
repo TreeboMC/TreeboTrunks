@@ -1,0 +1,58 @@
+name: TreeboTrunks
+version: ${project.version}
+main: me.shakeforprotein.treebotrunks.TreeboTrunk
+api-version: 1.13
+authors: [ShakeforProtein]
+description: Mass virtual chest storage
+website: http://treebomc.com
+
+commands:
+  belt:
+    permission: treebotrunk.belt.open
+    usage: "/barrel [number] - Opens a virtual belt. If a number is specified, it will attempt to open a belt with that identifier."
+  barrel:
+    permission: treebotrunk.barrel.open
+    usage: "/barrel [number] - Opens a virtual barrel. If a number is specified, it will attempt to open a barrel with that identifier."
+  chest:
+    permission: treebotrunk.chest.open
+    usage: "/chest [number] - Opens a virtual double chest. If a number is specified, it will attempt to open a chest with that identifier."
+  trash:
+    permission: treebotrunk.trash.open
+    usage: "/trash - Opens an inventory that will eat items"
+  addtrunk:
+    permission: treebotrunk.admin
+    usage: "/addtrunk <Player> <type> <number>"
+  anvil:
+    permission: treebotrunk.anvil
+  craft:
+    permission: treebotrunk.craft
+  enchant:
+    permission: treebotrunk.enchant
+  grindstone:
+    permission: treebotrunk.grindstone
+  stonecutter:
+    permission: treebotrunk.stonecutter
+
+permissions:
+  treebotrunk.belt.open:
+    default: false
+    description: Allows opening of TreeBelts
+  treebotrunk.chest.open:
+    default: false
+    description: Allows opening of TreeboChests
+  treebotrunk.barrel.open:
+    default: false
+    description: Allows opening of TreeBarrels
+  treebotrunk.trash.open:
+    default: true
+    description: Allows opening of TreeBin
+  treebotrunk.anvil:
+    default: op
+  treebotrunk.craft:
+    default: op
+  treebotrunk.enchant:
+    default: op
+  treebotrunk.grindstone:
+    default: op
+  treebotrunk.stonecutter:
+    default: op
