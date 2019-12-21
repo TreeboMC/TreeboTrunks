@@ -144,11 +144,8 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onPistonExtend(BlockPistonExtendEvent e){
         List<Block> Blocks = e.getBlocks();
-        Bukkit.broadcastMessage("Event happened");
         for(Block block : Blocks) {
-            Bukkit.broadcastMessage("Got Blocklist");
             if(block.getType() == Material.STONECUTTER) {
-                Bukkit.broadcastMessage("Found Stone cutter");
                 if (pl.getConfig().getConfigurationSection("Stonecutters") != null) {
                     for (String key : pl.getConfig().getConfigurationSection("Stonecutters").getKeys(false)) {
                         if (block.getLocation().getBlockX() == pl.getConfig().getInt("Stonecutters." + key + ".X")) {
