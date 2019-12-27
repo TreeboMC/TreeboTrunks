@@ -37,7 +37,7 @@ public class Chest implements CommandExecutor {
                 sender.sendMessage(pl.badge + pl.err + " This command only supports one argument.");
             }
         } else {
-            sender.sendMessage(pl.badge + pl.err + "This command is only usable as a player");
+            sender.sendMessage(pl.badge + pl.err + " This command is only usable as a player");
 
         }
         return true;

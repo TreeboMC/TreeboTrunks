@@ -4,20 +4,25 @@ import me.shakeforprotein.treebotrunks.Commands.*;
 import me.shakeforprotein.treebotrunks.Listeners.InventoryListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public final class TreeboTrunk extends JavaPlugin {
 
     public String badge = ChatColor.translateAlternateColorCodes('&', getConfig().getString("badge"));
-    public String err = ChatColor.RED + "" + ChatColor.BOLD + "Error:";
-
+    public String err = ChatColor.RED + "" + ChatColor.BOLD + " Error:";
+    public HashMap<Entity, Integer> astHash = new HashMap<>();
+    public HashMap<Material, Material> whitelistHash = new HashMap<>();
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults(true);
@@ -34,8 +39,25 @@ public final class TreeboTrunk extends JavaPlugin {
         this.getCommand("enchant").setExecutor(new Enchant(this));
         this.getCommand("grindstone").setExecutor(new Grindstone(this));
         this.getCommand("stonecutter").setExecutor(new Stonecutter(this));
+        this.getCommand("loom").setExecutor(new Loom(this));
+        this.getCommand("cartographer").setExecutor(new Cartographer(this));
+        this.getCommand("brew").setExecutor(new BrewingStand(this));
+        this.getCommand("smoker").setExecutor(new Smoker(this));
+        this.getCommand("furnace").setExecutor(new Furnace(this));
+        this.getCommand("blastfurnace").setExecutor(new BlastFurnace(this));
+        this.getCommand("chests").setExecutor(new Chests(this));
+        this.getCommand("belts").setExecutor(new Belts(this));
+        this.getCommand("barrels").setExecutor(new Barrels(this));
 
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
+
+        if(getConfig().get("whitelistBlocks") != null){
+            List<String> whiteList = new ArrayList<>();
+            whiteList = getConfig().getStringList("whitelistBlocks");
+            for(String item : whiteList){
+                whitelistHash.putIfAbsent(Material.valueOf(item), Material.valueOf(item));
+            }
+        }
      }
 
     @Override
@@ -63,12 +85,16 @@ public final class TreeboTrunk extends JavaPlugin {
     }
 
     public void openInventory(String type, Player p, int container){
+        String world = p.getWorld().getName().split("_")[0];
         int size = 9;
+        String icon = "CHEST";
         if(type.equalsIgnoreCase("belt")){
+            icon = "LEAD";
             size = 9;
         }
         else if(type.equalsIgnoreCase("barrel")){
             size = 27;
+            icon = "BARREL";
         }
         else if(type.equalsIgnoreCase("chest")){
             size = 54;
@@ -77,12 +103,17 @@ public final class TreeboTrunk extends JavaPlugin {
             p.sendMessage(badge + err + "Invalid inventory specification");
         }
 
-        File invFile = new File(this.getDataFolder() + File.separator + type + File.separator, p.getUniqueId().toString() + "_" + type + "_" + container + ".yml");
+        File invFile = new File(this.getDataFolder() + File.separator + type + File.separator, p.getUniqueId().toString() + "_" + type + "_" + container + "_" + world + ".yml");
         FileConfiguration invYaml = YamlConfiguration.loadConfiguration(invFile);
         Inventory thisInv = Bukkit.createInventory(null, size, badge + p.getUniqueId().toString() + "_" + type + "_" + container);
         if(invFile.exists()){
-            for(String key : invYaml.getConfigurationSection("Inventory").getKeys(false)){
-                thisInv.setItem(invYaml.getInt("Inventory." + key + ".slot"), invYaml.getItemStack("Inventory." + key + ".item"));
+            if(invYaml.getConfigurationSection("Inventory") != null) {
+                for (String key : invYaml.getConfigurationSection("Inventory").getKeys(false)) {
+                    thisInv.setItem(invYaml.getInt("Inventory." + key + ".slot"), invYaml.getItemStack("Inventory." + key + ".item"));
+                }
+                if (invYaml.get("icon") == null) {
+                    invYaml.set("icon", icon);
+                }
             }
         }
         p.openInventory(thisInv);

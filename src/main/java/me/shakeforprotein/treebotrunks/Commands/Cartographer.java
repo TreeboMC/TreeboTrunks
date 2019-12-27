@@ -15,15 +15,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+public class Cartographer implements CommandExecutor {
 
-public class Enchant implements CommandExecutor {
 
     private TreeboTrunk pl;
 
-
-    public Enchant(TreeboTrunk main) {
+    public Cartographer(TreeboTrunk main) {
         this.pl = main;
-
     }
 
     @Override
@@ -37,12 +35,13 @@ public class Enchant implements CommandExecutor {
                     if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
                         long time = System.currentTimeMillis();
                         Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("EnchTables." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("EnchTables." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("EnchTables." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("EnchTables." + time + ".World", l.getWorld().getName());
+                        pl.getConfig().set("Cartographers." + time + ".X", l.getBlockX());
+                        pl.getConfig().set("Cartographers." + time + ".Y", l.getBlockY());
+                        pl.getConfig().set("Cartographers." + time + ".Z", l.getBlockZ());
+                        pl.getConfig().set("Cartographers." + time + ".World", l.getWorld().getName());
 
-                        p.getLocation().getBlock().setType(Material.ENCHANTING_TABLE);
+                        p.getLocation().getBlock().setType(Material.CARTOGRAPHY_TABLE);
+
 
                         ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
 
@@ -52,7 +51,7 @@ public class Enchant implements CommandExecutor {
                         as.setCustomName((delay / 20) + ""); //Set this to the text you want
                         as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
                         as.setVisible(false);
-                        pl.getConfig().set("EnchTables." + time + ".AST", as.getUniqueId());
+                        pl.getConfig().set("Cartographers." + time + ".AST", as.getUniqueId());
                         pl.astHash.putIfAbsent(as, delay / 20);
                         BukkitRunnable runnable = new BukkitRunnable() {
                             @Override
@@ -73,18 +72,18 @@ public class Enchant implements CommandExecutor {
                             @Override
                             public void run() {
                                 int x, y, z = 0;
-                                x = pl.getConfig().getInt("EnchTables." + time + ".X");
-                                y = pl.getConfig().getInt("EnchTables." + time + ".Y");
-                                z = pl.getConfig().getInt("EnchTables." + time + ".Z");
-                                String world = pl.getConfig().getString("EnchTables." + time + ".World");
+                                x = pl.getConfig().getInt("Cartographers." + time + ".X");
+                                y = pl.getConfig().getInt("Cartographers." + time + ".Y");
+                                z = pl.getConfig().getInt("Cartographers." + time + ".Z");
+                                String world = pl.getConfig().getString("Cartographers." + time + ".World");
                                 Location loc = new Location(Bukkit.getWorld(world), x, y, z);
                                 loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("EnchTables." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("EnchTables." + time + ".AST"))).remove();
+                                if (pl.getConfig().getString("Cartographers." + time + ".AST") != null) {
+                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("Cartographers." + time + ".AST"))).remove();
                                 }
-                                pl.getConfig().set("EnchTables." + time, null);
+                                pl.getConfig().set("Cartographers." + time, null);
                             }
-                        }, 600L);
+                        }, delay);
                     }
                 }
             }

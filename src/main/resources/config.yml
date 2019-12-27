@@ -1,1 +1,10 @@
 badge: "&6[TreeboTrunk]&r"
+whitelistBlocks:
+  - AIR
+  - GRASS
+  - DEAD_BUSH
+  - FERN
+  - LARGE_FERN
+  - TALL_GRASS
+  - DANDELION
+  - POPPY

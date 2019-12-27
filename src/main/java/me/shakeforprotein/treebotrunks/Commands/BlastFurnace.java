@@ -11,17 +11,17 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-
-public class Enchant implements CommandExecutor {
+public class BlastFurnace implements CommandExecutor {
 
     private TreeboTrunk pl;
 
 
-    public Enchant(TreeboTrunk main) {
+    public BlastFurnace(TreeboTrunk main) {
         this.pl = main;
 
     }
@@ -32,27 +32,27 @@ public class Enchant implements CommandExecutor {
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
+            int delay = 3600;
             if (pl.whitelistHash.containsKey(p.getLocation().getBlock().getType())) {
                 if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
                     if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
                         long time = System.currentTimeMillis();
                         Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("EnchTables." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("EnchTables." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("EnchTables." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("EnchTables." + time + ".World", l.getWorld().getName());
+                        pl.getConfig().set("BlastFurnaces." + time + ".X", l.getBlockX());
+                        pl.getConfig().set("BlastFurnaces." + time + ".Y", l.getBlockY());
+                        pl.getConfig().set("BlastFurnaces." + time + ".Z", l.getBlockZ());
+                        pl.getConfig().set("BlastFurnaces." + time + ".World", l.getWorld().getName());
 
-                        p.getLocation().getBlock().setType(Material.ENCHANTING_TABLE);
+                        p.getLocation().getBlock().setType(Material.BLAST_FURNACE);
 
                         ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
 
-                        int delay = 600;
                         as.setGravity(false); //Make sure it doesn't fall
                         as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
                         as.setCustomName((delay / 20) + ""); //Set this to the text you want
                         as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
                         as.setVisible(false);
-                        pl.getConfig().set("EnchTables." + time + ".AST", as.getUniqueId());
+                        pl.getConfig().set("BlastFurnaces." + time + ".AST", as.getUniqueId());
                         pl.astHash.putIfAbsent(as, delay / 20);
                         BukkitRunnable runnable = new BukkitRunnable() {
                             @Override
@@ -73,18 +73,19 @@ public class Enchant implements CommandExecutor {
                             @Override
                             public void run() {
                                 int x, y, z = 0;
-                                x = pl.getConfig().getInt("EnchTables." + time + ".X");
-                                y = pl.getConfig().getInt("EnchTables." + time + ".Y");
-                                z = pl.getConfig().getInt("EnchTables." + time + ".Z");
-                                String world = pl.getConfig().getString("EnchTables." + time + ".World");
+                                x = pl.getConfig().getInt("BlastFurnaces." + time + ".X");
+                                y = pl.getConfig().getInt("BlastFurnaces." + time + ".Y");
+                                z = pl.getConfig().getInt("BlastFurnaces." + time + ".Z");
+                                String world = pl.getConfig().getString("BlastFurnaces." + time + ".World");
                                 Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+
                                 loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("EnchTables." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("EnchTables." + time + ".AST"))).remove();
+                                if (pl.getConfig().getString("BlastFurnaces." + time + ".AST") != null) {
+                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("BlastFurnaces." + time + ".AST"))).remove();
                                 }
-                                pl.getConfig().set("EnchTables." + time, null);
+                                pl.getConfig().set("BlastFurnaces." + time, null);
                             }
-                        }, 600L);
+                        }, delay);
                     }
                 }
             }

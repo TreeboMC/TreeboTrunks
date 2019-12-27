@@ -42,7 +42,36 @@ commands:
     permission: treebotrunk.stonecutter
     usage: "/stonecutter"
     description: "Temporarily Places an stonecutter at your feet if the block is clear"
-
+  cartographer:
+    permission: treebotrunk.cartographer
+    usage: "/cartographer"
+    description: "Temporarily Places a cartography table at your feet if the block is clear"
+  loom:
+    permission: treebotrunk.loom
+    usage: "/loom"
+    description: "Temporarily Places a loom at your feet if the block is clear"
+  furnace:
+    permission: treebotrunk.loom
+    usage: "/loom"
+    description: "Temporarily Places a Furnace at your feet if the block is clear"
+  blastfurnace:
+    permission: treebotrunk.loom
+    usage: "/loom"
+    description: "Temporarily Places a Blast Furnace at your feet if the block is clear"
+  smoker:
+    permission: treebotrunk.loom
+    usage: "/loom"
+    description: "Temporarily Places a Smoke at your feet if the block is clear"
+  brew:
+    permission: treebotrunk.brew
+    usage: "/loom"
+    description: "Temporarily Places a Brewing Stand at your feet if the block is clear"
+  chests:
+    permission: treebotrunk.chest.open
+  belts:
+    permission: treebotrunk.belt.open
+  barrels:
+    permission: treebotrunk.barrel.open
 permissions:
   treebotrunk.belt.open:
     default: false
@@ -65,4 +94,16 @@ permissions:
   treebotrunk.grindstone:
     default: op
   treebotrunk.stonecutter:
+    default: op
+  treebotrunk.cartographer:
+    default: op
+  treebotrunk.loom:
+    default: op
+  treebotrunk.furnace:
+    default: op
+  treebotrunk.blastfurnace:
+    default: op
+  treebotrunk.brew:
+    default: op
+  treebotrunk.smoker:
     default: op

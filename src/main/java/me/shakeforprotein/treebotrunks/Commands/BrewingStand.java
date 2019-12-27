@@ -5,23 +5,26 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Container;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
-
-public class Enchant implements CommandExecutor {
+public class BrewingStand implements CommandExecutor {
 
     private TreeboTrunk pl;
 
 
-    public Enchant(TreeboTrunk main) {
+    public BrewingStand(TreeboTrunk main) {
         this.pl = main;
 
     }
@@ -32,27 +35,27 @@ public class Enchant implements CommandExecutor {
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
+            int delay = 3600;
             if (pl.whitelistHash.containsKey(p.getLocation().getBlock().getType())) {
                 if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
                     if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
                         long time = System.currentTimeMillis();
                         Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("EnchTables." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("EnchTables." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("EnchTables." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("EnchTables." + time + ".World", l.getWorld().getName());
+                        pl.getConfig().set("BrewingStands." + time + ".X", l.getBlockX());
+                        pl.getConfig().set("BrewingStands." + time + ".Y", l.getBlockY());
+                        pl.getConfig().set("BrewingStands." + time + ".Z", l.getBlockZ());
+                        pl.getConfig().set("BrewingStands." + time + ".World", l.getWorld().getName());
 
-                        p.getLocation().getBlock().setType(Material.ENCHANTING_TABLE);
+                        p.getLocation().getBlock().setType(Material.BREWING_STAND);
 
                         ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
 
-                        int delay = 600;
                         as.setGravity(false); //Make sure it doesn't fall
                         as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
                         as.setCustomName((delay / 20) + ""); //Set this to the text you want
                         as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
                         as.setVisible(false);
-                        pl.getConfig().set("EnchTables." + time + ".AST", as.getUniqueId());
+                        pl.getConfig().set("BrewingStands." + time + ".AST", as.getUniqueId());
                         pl.astHash.putIfAbsent(as, delay / 20);
                         BukkitRunnable runnable = new BukkitRunnable() {
                             @Override
@@ -73,21 +76,29 @@ public class Enchant implements CommandExecutor {
                             @Override
                             public void run() {
                                 int x, y, z = 0;
-                                x = pl.getConfig().getInt("EnchTables." + time + ".X");
-                                y = pl.getConfig().getInt("EnchTables." + time + ".Y");
-                                z = pl.getConfig().getInt("EnchTables." + time + ".Z");
-                                String world = pl.getConfig().getString("EnchTables." + time + ".World");
+                                x = pl.getConfig().getInt("BrewingStands." + time + ".X");
+                                y = pl.getConfig().getInt("BrewingStands." + time + ".Y");
+                                z = pl.getConfig().getInt("BrewingStands." + time + ".Z");
+                                String world = pl.getConfig().getString("BrewingStands." + time + ".World");
                                 Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-                                loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("EnchTables." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("EnchTables." + time + ".AST"))).remove();
+
+                                if (loc.getBlock().getState() instanceof org.bukkit.block.data.type.BrewingStand) {
+                                    Bukkit.broadcastMessage("Brewing Stand");
                                 }
-                                pl.getConfig().set("EnchTables." + time, null);
+
+
+                                //loc.getBlock().breakNaturally();
+                                loc.getBlock().setType(Material.AIR);
+                                if (pl.getConfig().getString("BrewingStands." + time + ".AST") != null) {
+                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("BrewingStands." + time + ".AST"))).remove();
+                                }
+                                pl.getConfig().set("BrewingStands." + time, null);
                             }
-                        }, 600L);
+                        }, delay);
                     }
                 }
             }
+
         } else {
             sender.sendMessage(pl.badge + pl.err + "You must be a player to use this command");
         }

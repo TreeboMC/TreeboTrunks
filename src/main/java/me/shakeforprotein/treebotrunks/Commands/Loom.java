@@ -15,15 +15,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+public class Loom implements CommandExecutor {
 
-public class Enchant implements CommandExecutor {
 
     private TreeboTrunk pl;
 
-
-    public Enchant(TreeboTrunk main) {
+    public Loom(TreeboTrunk main) {
         this.pl = main;
-
     }
 
     @Override
@@ -37,12 +35,12 @@ public class Enchant implements CommandExecutor {
                     if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
                         long time = System.currentTimeMillis();
                         Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("EnchTables." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("EnchTables." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("EnchTables." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("EnchTables." + time + ".World", l.getWorld().getName());
+                        pl.getConfig().set("Looms." + time + ".X", l.getBlockX());
+                        pl.getConfig().set("Looms." + time + ".Y", l.getBlockY());
+                        pl.getConfig().set("Looms." + time + ".Z", l.getBlockZ());
+                        pl.getConfig().set("Looms." + time + ".World", l.getWorld().getName());
 
-                        p.getLocation().getBlock().setType(Material.ENCHANTING_TABLE);
+                        p.getLocation().getBlock().setType(Material.LOOM);
 
                         ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
 
@@ -52,7 +50,7 @@ public class Enchant implements CommandExecutor {
                         as.setCustomName((delay / 20) + ""); //Set this to the text you want
                         as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
                         as.setVisible(false);
-                        pl.getConfig().set("EnchTables." + time + ".AST", as.getUniqueId());
+                        pl.getConfig().set("Looms." + time + ".AST", as.getUniqueId());
                         pl.astHash.putIfAbsent(as, delay / 20);
                         BukkitRunnable runnable = new BukkitRunnable() {
                             @Override
@@ -73,16 +71,16 @@ public class Enchant implements CommandExecutor {
                             @Override
                             public void run() {
                                 int x, y, z = 0;
-                                x = pl.getConfig().getInt("EnchTables." + time + ".X");
-                                y = pl.getConfig().getInt("EnchTables." + time + ".Y");
-                                z = pl.getConfig().getInt("EnchTables." + time + ".Z");
-                                String world = pl.getConfig().getString("EnchTables." + time + ".World");
+                                x = pl.getConfig().getInt("Looms." + time + ".X");
+                                y = pl.getConfig().getInt("Looms." + time + ".Y");
+                                z = pl.getConfig().getInt("Looms." + time + ".Z");
+                                String world = pl.getConfig().getString("Looms." + time + ".World");
                                 Location loc = new Location(Bukkit.getWorld(world), x, y, z);
                                 loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("EnchTables." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("EnchTables." + time + ".AST"))).remove();
+                                if (pl.getConfig().getString("Looms." + time + ".AST") != null) {
+                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("Looms." + time + ".AST"))).remove();
                                 }
-                                pl.getConfig().set("EnchTables." + time, null);
+                                pl.getConfig().set("Looms." + time, null);
                             }
                         }, 600L);
                     }
