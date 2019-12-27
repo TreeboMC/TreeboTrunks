@@ -2,7 +2,8 @@
 Virtual storage and crafting for minecraft
 
 https://www.youtube.com/watch?v=3E0QFEMNUFU
-
+ 
+![Commands Header](https://github.com/TreeboMC/TreeboTrunks/blob/master/img/commands.png)
 
 ## Commands:
 ```
@@ -44,6 +45,7 @@ https://www.youtube.com/watch?v=3E0QFEMNUFU
     
   /barrels - Open the GUI to select from your available Barrels
   ```
+![Perms Header](https://github.com/TreeboMC/TreeboTrunks/blob/master/img/perms.png)
 
 ## Permissions:
 ```
