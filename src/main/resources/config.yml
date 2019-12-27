@@ -1,4 +1,5 @@
 badge: "&6[TreeboTrunk]&r"
+bstatsIntegration: true
 whitelistBlocks:
   - AIR
   - GRASS

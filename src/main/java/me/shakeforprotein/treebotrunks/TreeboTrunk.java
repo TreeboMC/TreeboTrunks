@@ -2,6 +2,7 @@ package me.shakeforprotein.treebotrunks;
 
 import me.shakeforprotein.treebotrunks.Commands.*;
 import me.shakeforprotein.treebotrunks.Listeners.InventoryListener;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -50,7 +51,11 @@ public final class TreeboTrunk extends JavaPlugin {
         this.getCommand("barrels").setExecutor(new Barrels(this));
 
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
-
+        if(getConfig().get("bstatsIntegration") != null) {
+            if (getConfig().getBoolean("bstatsIntegration")) {
+                Metrics metrics = new Metrics(this);
+            }
+        }
         if(getConfig().get("whitelistBlocks") != null){
             List<String> whiteList = new ArrayList<>();
             whiteList = getConfig().getStringList("whitelistBlocks");
