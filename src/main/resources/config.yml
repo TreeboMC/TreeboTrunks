@@ -1,4 +1,6 @@
-badge: "&6[TreeboTrunk]&r"
+badge: "&6[TreeboTrunks]&r"
+checkUpdates: true
+updateChecker: spigot
 bstatsIntegration: true
 whitelistBlocks:
   - AIR

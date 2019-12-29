@@ -2,6 +2,8 @@ package me.shakeforprotein.treebotrunks;
 
 import me.shakeforprotein.treebotrunks.Commands.*;
 import me.shakeforprotein.treebotrunks.Listeners.InventoryListener;
+import me.shakeforprotein.treebotrunks.Listeners.JoinListener;
+import me.shakeforprotein.treebotrunks.SpigotUpdateChecker.SpigotUpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,6 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 public final class TreeboTrunk extends JavaPlugin {
 
@@ -24,12 +27,17 @@ public final class TreeboTrunk extends JavaPlugin {
     public String err = ChatColor.RED + "" + ChatColor.BOLD + " Error:";
     public HashMap<Entity, Integer> astHash = new HashMap<>();
     public HashMap<Material, Material> whitelistHash = new HashMap<>();
+    public static Boolean checkUpdates = false;
+    public Boolean requiresUpdate = false;
+    public static String spigotVersion = "0";
+    public HashMap<Player, Boolean> notifyHash = new HashMap<>();
+
     @Override
     public void onEnable() {
         getConfig().options().copyDefaults(true);
         getConfig().set("version", this.getDescription().getVersion());
         saveConfig();
-
+        Logger logger = this.getLogger();
         this.getCommand("addtrunk").setExecutor(new AddTrunk(this));
         this.getCommand("barrel").setExecutor(new Barrel(this));
         this.getCommand("chest").setExecutor(new Chest(this));
@@ -51,9 +59,26 @@ public final class TreeboTrunk extends JavaPlugin {
         this.getCommand("barrels").setExecutor(new Barrels(this));
 
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
         if(getConfig().get("bstatsIntegration") != null) {
             if (getConfig().getBoolean("bstatsIntegration")) {
                 Metrics metrics = new Metrics(this);
+            }
+        }
+        if(getConfig().get("updateChecker") != null){
+            if(getConfig().getBoolean("checkUpdates")) {
+                if (getConfig().getString("updateChecker").equalsIgnoreCase("spigot")) {
+                    new SpigotUpdateChecker(this, 73787).getVersion(version -> {
+                        if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                            logger.info(" can be updated to Version: " + version);
+                            requiresUpdate = true;
+                            spigotVersion = version;
+                        }
+                    });
+
+                } else if (getConfig().getString("updateChecker").equalsIgnoreCase("github")) {
+
+                }
             }
         }
         if(getConfig().get("whitelistBlocks") != null){

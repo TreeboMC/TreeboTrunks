@@ -73,6 +73,9 @@ commands:
   barrels:
     permission: treebotrunk.barrel.open
 permissions:
+  treebotrunk.admin:
+    default: op
+    description: Allows player to see update notifications
   treebotrunk.belt.open:
     default: false
     description: Allows opening of TreeBelts
