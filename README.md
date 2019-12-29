@@ -1,4 +1,8 @@
 # TreeboTrunks
+[![Support](https://img.shields.io/badge/Minecraft-1.15-green.svg)](http://discord.gg/EzQXP6V)
+[![Spigot](https://img.shields.io/badge/Spigot-Project%20Page-yellow.svg)](https://www.spigotmc.org/resources/treebo-trunks.73787/)
+[![JDK](https://img.shields.io/badge/JDK-1.8-blue.svg)](http://www.oracle.com/technetwork/java/javase/downloads/jre7-downloads-1880261.html)
+
 Virtual storage and crafting for minecraft
 
 https://www.youtube.com/watch?v=3E0QFEMNUFU
