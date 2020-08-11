@@ -1,5 +1,6 @@
 package me.shakeforprotein.treebotrunks.Commands;
 
+import com.sk89q.worldguard.LocalPlayer;
 import me.shakeforprotein.treebotrunks.TreeboTrunk;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,59 +35,65 @@ public class BlastFurnace implements CommandExecutor {
             Player p = (Player) sender;
             int delay = 3600;
             if (pl.whitelistHash.containsKey(p.getLocation().getBlock().getType())) {
-                if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
-                    if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
-                        long time = System.currentTimeMillis();
-                        Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("BlastFurnaces." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("BlastFurnaces." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("BlastFurnaces." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("BlastFurnaces." + time + ".World", l.getWorld().getName());
+                LocalPlayer wgPlayer = pl.worldGuardPlugin.wrapPlayer(p);
 
-                        p.getLocation().getBlock().setType(Material.BLAST_FURNACE);
+                if (pl.hasBypass(wgPlayer, p.getLocation()) || pl.canBuild(wgPlayer, p.getLocation())) {
+                    if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
+                        if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
+                            long time = System.currentTimeMillis();
+                            Location l = p.getLocation().getBlock().getLocation();
+                            pl.getConfig().set("BlastFurnaces." + time + ".X", l.getBlockX());
+                            pl.getConfig().set("BlastFurnaces." + time + ".Y", l.getBlockY());
+                            pl.getConfig().set("BlastFurnaces." + time + ".Z", l.getBlockZ());
+                            pl.getConfig().set("BlastFurnaces." + time + ".World", l.getWorld().getName());
 
-                        ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
+                            p.getLocation().getBlock().setType(Material.BLAST_FURNACE);
 
-                        as.setGravity(false); //Make sure it doesn't fall
-                        as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
-                        as.setCustomName((delay / 20) + ""); //Set this to the text you want
-                        as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
-                        as.setVisible(false);
-                        pl.getConfig().set("BlastFurnaces." + time + ".AST", as.getUniqueId());
-                        pl.astHash.putIfAbsent(as, delay / 20);
-                        BukkitRunnable runnable = new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                int currentVal = pl.astHash.get(as);
-                                if (currentVal > 0) {
-                                    currentVal--;
-                                    String newName = currentVal + "";
-                                    as.setCustomName(ChatColor.GOLD + newName);
-                                    pl.astHash.replace(as, currentVal);
-                                } else {
-                                    this.cancel();
+                            ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
+
+                            as.setGravity(false); //Make sure it doesn't fall
+                            as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
+                            as.setCustomName((delay / 20) + ""); //Set this to the text you want
+                            as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
+                            as.setVisible(false);
+                            pl.getConfig().set("BlastFurnaces." + time + ".AST", as.getUniqueId());
+                            pl.astHash.putIfAbsent(as, delay / 20);
+                            BukkitRunnable runnable = new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    int currentVal = pl.astHash.get(as);
+                                    if (currentVal > 0) {
+                                        currentVal--;
+                                        String newName = currentVal + "";
+                                        as.setCustomName(ChatColor.GOLD + newName);
+                                        pl.astHash.replace(as, currentVal);
+                                    } else {
+                                        this.cancel();
+                                    }
                                 }
-                            }
-                        };
-                        runnable.runTaskTimer(pl, 20L, 20L);
-                        Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-                            @Override
-                            public void run() {
-                                int x, y, z = 0;
-                                x = pl.getConfig().getInt("BlastFurnaces." + time + ".X");
-                                y = pl.getConfig().getInt("BlastFurnaces." + time + ".Y");
-                                z = pl.getConfig().getInt("BlastFurnaces." + time + ".Z");
-                                String world = pl.getConfig().getString("BlastFurnaces." + time + ".World");
-                                Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+                            };
+                            runnable.runTaskTimer(pl, 20L, 20L);
+                            Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+                                @Override
+                                public void run() {
+                                    int x, y, z = 0;
+                                    x = pl.getConfig().getInt("BlastFurnaces." + time + ".X");
+                                    y = pl.getConfig().getInt("BlastFurnaces." + time + ".Y");
+                                    z = pl.getConfig().getInt("BlastFurnaces." + time + ".Z");
+                                    String world = pl.getConfig().getString("BlastFurnaces." + time + ".World");
+                                    Location loc = new Location(Bukkit.getWorld(world), x, y, z);
 
-                                loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("BlastFurnaces." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("BlastFurnaces." + time + ".AST"))).remove();
+                                    loc.getBlock().setType(Material.AIR);
+                                    if (pl.getConfig().getString("BlastFurnaces." + time + ".AST") != null) {
+                                        Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("BlastFurnaces." + time + ".AST"))).remove();
+                                    }
+                                    pl.getConfig().set("BlastFurnaces." + time, null);
                                 }
-                                pl.getConfig().set("BlastFurnaces." + time, null);
-                            }
-                        }, delay);
+                            }, delay);
+                        }
                     }
+                } else {
+                    p.sendMessage(pl.badge + pl.err + "You are not entitled to build here");
                 }
             }
         } else {

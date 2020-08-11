@@ -1,5 +1,14 @@
 package me.shakeforprotein.treebotrunks;
 
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.BukkitUtil;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.Flags;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.shakeforprotein.treebotrunks.Commands.*;
 import me.shakeforprotein.treebotrunks.Listeners.InventoryListener;
 import me.shakeforprotein.treebotrunks.Listeners.JoinListener;
@@ -7,6 +16,7 @@ import me.shakeforprotein.treebotrunks.SpigotUpdateChecker.SpigotUpdateChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -31,6 +41,10 @@ public final class TreeboTrunk extends JavaPlugin {
     public Boolean requiresUpdate = false;
     public static String spigotVersion = "0";
     public HashMap<Player, Boolean> notifyHash = new HashMap<>();
+    public WorldGuard worldGuard = WorldGuard.getInstance();
+    public WorldGuardPlugin worldGuardPlugin = WorldGuardPlugin.inst();
+    public WorldEdit worldEdit = WorldEdit.getInstance();
+    public WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 
     @Override
     public void onEnable() {
@@ -60,13 +74,13 @@ public final class TreeboTrunk extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
-        if(getConfig().get("bstatsIntegration") != null) {
+        if (getConfig().get("bstatsIntegration") != null) {
             if (getConfig().getBoolean("bstatsIntegration")) {
                 Metrics metrics = new Metrics(this);
             }
         }
-        if(getConfig().get("updateChecker") != null){
-            if(getConfig().getBoolean("checkUpdates")) {
+        if (getConfig().get("updateChecker") != null) {
+            if (getConfig().getBoolean("checkUpdates")) {
                 if (getConfig().getString("updateChecker").equalsIgnoreCase("spigot")) {
                     new SpigotUpdateChecker(this, 73787).getVersion(version -> {
                         if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
@@ -81,14 +95,14 @@ public final class TreeboTrunk extends JavaPlugin {
                 }
             }
         }
-        if(getConfig().get("whitelistBlocks") != null){
+        if (getConfig().get("whitelistBlocks") != null) {
             List<String> whiteList = new ArrayList<>();
             whiteList = getConfig().getStringList("whitelistBlocks");
-            for(String item : whiteList){
+            for (String item : whiteList) {
                 whitelistHash.putIfAbsent(Material.valueOf(item), Material.valueOf(item));
             }
         }
-     }
+    }
 
     @Override
     public void onDisable() {
@@ -109,35 +123,31 @@ public final class TreeboTrunk extends JavaPlugin {
         return max;
     }
 
-    public static boolean isNumeric (String str)
-    {
+    public static boolean isNumeric(String str) {
         return str.matches("\\d+");
     }
 
-    public void openInventory(String type, Player p, int container){
+    public void openInventory(String type, Player p, int container) {
         String world = p.getWorld().getName().split("_")[0];
         int size = 9;
         String icon = "CHEST";
-        if(type.equalsIgnoreCase("belt")){
+        if (type.equalsIgnoreCase("belt")) {
             icon = "LEAD";
             size = 9;
-        }
-        else if(type.equalsIgnoreCase("barrel")){
+        } else if (type.equalsIgnoreCase("barrel")) {
             size = 27;
             icon = "BARREL";
-        }
-        else if(type.equalsIgnoreCase("chest")){
+        } else if (type.equalsIgnoreCase("chest")) {
             size = 54;
-        }
-        else{
+        } else {
             p.sendMessage(badge + err + "Invalid inventory specification");
         }
 
         File invFile = new File(this.getDataFolder() + File.separator + type + File.separator, p.getUniqueId().toString() + "_" + type + "_" + container + "_" + world + ".yml");
         FileConfiguration invYaml = YamlConfiguration.loadConfiguration(invFile);
         Inventory thisInv = Bukkit.createInventory(null, size, badge + p.getUniqueId().toString() + "_" + type + "_" + container);
-        if(invFile.exists()){
-            if(invYaml.getConfigurationSection("Inventory") != null) {
+        if (invFile.exists()) {
+            if (invYaml.getConfigurationSection("Inventory") != null) {
                 for (String key : invYaml.getConfigurationSection("Inventory").getKeys(false)) {
                     thisInv.setItem(invYaml.getInt("Inventory." + key + ".slot"), invYaml.getItemStack("Inventory." + key + ".item"));
                 }
@@ -149,5 +159,20 @@ public final class TreeboTrunk extends JavaPlugin {
         p.openInventory(thisInv);
         invFile = null;
         invYaml = null;
+    }
+
+    public boolean canBuild(LocalPlayer p, Location l) {
+        RegionQuery query = WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery();
+        com.sk89q.worldedit.util.Location loc = BukkitAdapter.adapt(l);
+        if (!hasBypass(p, l)) {
+            return query.testState(loc, p, Flags.BUILD);
+        } else {
+            return true;
+        }
+    }
+
+
+    public boolean hasBypass(LocalPlayer p, Location l) {
+        return WorldGuard.getInstance().getPlatform().getSessionManager().hasBypass(p, p.getWorld());
     }
 }

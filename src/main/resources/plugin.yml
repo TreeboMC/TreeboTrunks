@@ -5,6 +5,7 @@ api-version: 1.13
 authors: [ShakeforProtein]
 description: Mass virtual chest storage
 website: http://treebomc.com
+depend: [WorldGuard, WorldEdit]
 
 commands:
   belt:
@@ -51,20 +52,20 @@ commands:
     usage: "/loom"
     description: "Temporarily Places a loom at your feet if the block is clear"
   furnace:
-    permission: treebotrunk.loom
-    usage: "/loom"
+    permission: treebotrunk.furnace
+    usage: "/furnace"
     description: "Temporarily Places a Furnace at your feet if the block is clear"
   blastfurnace:
-    permission: treebotrunk.loom
-    usage: "/loom"
+    permission: treebotrunk.blastfurnace
+    usage: "/blastfurnace"
     description: "Temporarily Places a Blast Furnace at your feet if the block is clear"
   smoker:
-    permission: treebotrunk.loom
-    usage: "/loom"
-    description: "Temporarily Places a Smoke at your feet if the block is clear"
+    permission: treebotrunk.smoker
+    usage: "/smoker"
+    description: "Temporarily Places a Smoker at your feet if the block is clear"
   brew:
     permission: treebotrunk.brew
-    usage: "/loom"
+    usage: "/brew"
     description: "Temporarily Places a Brewing Stand at your feet if the block is clear"
   chests:
     permission: treebotrunk.chest.open
@@ -73,7 +74,7 @@ commands:
   barrels:
     permission: treebotrunk.barrel.open
 permissions:
-  treebotrunk.admin:
+  treebotrunks.admin:
     default: op
     description: Allows player to see update notifications
   treebotrunk.belt.open:

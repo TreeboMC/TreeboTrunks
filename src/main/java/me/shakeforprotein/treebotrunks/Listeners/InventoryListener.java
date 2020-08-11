@@ -19,7 +19,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -245,30 +249,32 @@ public class InventoryListener implements Listener {
                 e.getWhoClicked().closeInventory();
             } else {
                 e.setCancelled(true);
-                int max = pl.getVarPerm("treebotrunk.chest", (Player) e.getWhoClicked());
-                if (e.getSlot() < max + 1) {
-                    ClickType cT = e.getClick();
-                    if (cT == ClickType.LEFT) {
-                        Bukkit.dispatchCommand(e.getWhoClicked(), "chest " + e.getSlot());
-                    } else if (cT == ClickType.RIGHT) {
-                        Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Chest_" + e.getSlot() + "_" + world);
-                        ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
-                        ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
-                        ItemStack back = new ItemStack(Material.BARRIER, 1);
-                        ItemMeta tagMeta = nameTag.getItemMeta();
-                        ItemMeta iconMeta = icon.getItemMeta();
-                        ItemMeta backMeta = back.getItemMeta();
-                        tagMeta.setDisplayName("Rename Chest " + e.getSlot() + "_" + world);
-                        iconMeta.setDisplayName("Set icon for Chest " + e.getSlot() + "_" + world);
-                        backMeta.setDisplayName("Return to previous menu");
-                        nameTag.setItemMeta(tagMeta);
-                        icon.setItemMeta(iconMeta);
-                        back.setItemMeta(backMeta);
-                        newInv.setItem(0, nameTag);
-                        newInv.setItem(1, icon);
-                        newInv.setItem(8, back);
+                if (!(e.getClickedInventory() instanceof PlayerInventory)) {
+                    int max = pl.getVarPerm("treebotrunk.chest", (Player) e.getWhoClicked());
+                    if (e.getSlot() < max + 1) {
+                        ClickType cT = e.getClick();
+                        if (cT == ClickType.LEFT) {
+                            Bukkit.dispatchCommand(e.getWhoClicked(), "chest " + e.getSlot());
+                        } else if (cT == ClickType.RIGHT) {
+                            Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Chest_" + e.getSlot() + "_" + world);
+                            ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
+                            ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
+                            ItemStack back = new ItemStack(Material.BARRIER, 1);
+                            ItemMeta tagMeta = nameTag.getItemMeta();
+                            ItemMeta iconMeta = icon.getItemMeta();
+                            ItemMeta backMeta = back.getItemMeta();
+                            tagMeta.setDisplayName("Rename Chest " + e.getSlot() + "_" + world);
+                            iconMeta.setDisplayName("Set icon for Chest " + e.getSlot() + "_" + world);
+                            backMeta.setDisplayName("Return to previous menu");
+                            nameTag.setItemMeta(tagMeta);
+                            icon.setItemMeta(iconMeta);
+                            back.setItemMeta(backMeta);
+                            newInv.setItem(0, nameTag);
+                            newInv.setItem(1, icon);
+                            newInv.setItem(8, back);
 
-                        e.getWhoClicked().openInventory(newInv);
+                            e.getWhoClicked().openInventory(newInv);
+                        }
                     }
                 }
             }
@@ -277,30 +283,32 @@ public class InventoryListener implements Listener {
                 e.getWhoClicked().closeInventory();
             } else {
                 e.setCancelled(true);
-                int max = pl.getVarPerm("treebotrunk.belt", (Player) e.getWhoClicked());
-                if (e.getSlot() < max + 1) {
-                    ClickType cT = e.getClick();
-                    if (cT == ClickType.LEFT) {
-                        Bukkit.dispatchCommand(e.getWhoClicked(), "belt " + e.getSlot());
-                    } else if (cT == ClickType.RIGHT) {
-                        Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Belt_" + e.getSlot() + "_" + world);
-                        ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
-                        ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
-                        ItemStack back = new ItemStack(Material.BARRIER, 1);
-                        ItemMeta tagMeta = nameTag.getItemMeta();
-                        ItemMeta iconMeta = icon.getItemMeta();
-                        ItemMeta backMeta = back.getItemMeta();
-                        tagMeta.setDisplayName("Rename Belt " + e.getSlot() + "_" + world);
-                        iconMeta.setDisplayName("Set icon for Belt " + e.getSlot() + "_" + world);
-                        backMeta.setDisplayName("Return to previous menu");
-                        nameTag.setItemMeta(tagMeta);
-                        icon.setItemMeta(iconMeta);
-                        back.setItemMeta(backMeta);
-                        newInv.setItem(0, nameTag);
-                        newInv.setItem(1, icon);
-                        newInv.setItem(8, back);
+                if (!(e.getClickedInventory() instanceof PlayerInventory)) {
+                    int max = pl.getVarPerm("treebotrunk.belt", (Player) e.getWhoClicked());
+                    if (e.getSlot() < max + 1) {
+                        ClickType cT = e.getClick();
+                        if (cT == ClickType.LEFT) {
+                            Bukkit.dispatchCommand(e.getWhoClicked(), "belt " + e.getSlot());
+                        } else if (cT == ClickType.RIGHT) {
+                            Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Belt_" + e.getSlot() + "_" + world);
+                            ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
+                            ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
+                            ItemStack back = new ItemStack(Material.BARRIER, 1);
+                            ItemMeta tagMeta = nameTag.getItemMeta();
+                            ItemMeta iconMeta = icon.getItemMeta();
+                            ItemMeta backMeta = back.getItemMeta();
+                            tagMeta.setDisplayName("Rename Belt " + e.getSlot() + "_" + world);
+                            iconMeta.setDisplayName("Set icon for Belt " + e.getSlot() + "_" + world);
+                            backMeta.setDisplayName("Return to previous menu");
+                            nameTag.setItemMeta(tagMeta);
+                            icon.setItemMeta(iconMeta);
+                            back.setItemMeta(backMeta);
+                            newInv.setItem(0, nameTag);
+                            newInv.setItem(1, icon);
+                            newInv.setItem(8, back);
 
-                        e.getWhoClicked().openInventory(newInv);
+                            e.getWhoClicked().openInventory(newInv);
+                        }
                     }
                 }
             }
@@ -309,29 +317,31 @@ public class InventoryListener implements Listener {
                 e.getWhoClicked().closeInventory();
             } else {
                 e.setCancelled(true);
-                int max = pl.getVarPerm("treebotrunk.barrel", (Player) e.getWhoClicked());
-                if (e.getSlot() < max + 1) {
-                    ClickType cT = e.getClick();
-                    if (cT == ClickType.LEFT) {
-                        Bukkit.dispatchCommand(e.getWhoClicked(), "barrel " + e.getSlot());
-                    } else if (cT == ClickType.RIGHT) {
-                        Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Barrel_" + e.getSlot() + "_" + world);
-                        ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
-                        ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
-                        ItemStack back = new ItemStack(Material.BARRIER, 1);
-                        ItemMeta tagMeta = nameTag.getItemMeta();
-                        ItemMeta iconMeta = icon.getItemMeta();
-                        ItemMeta backMeta = back.getItemMeta();
-                        tagMeta.setDisplayName("Rename Barrel " + e.getSlot() + "_" + world);
-                        iconMeta.setDisplayName("Set icon for Barrel " + e.getSlot() + "_" + world);
-                        backMeta.setDisplayName("Return to previous menu");
-                        nameTag.setItemMeta(tagMeta);
-                        icon.setItemMeta(iconMeta);
-                        back.setItemMeta(backMeta);
-                        newInv.setItem(0, nameTag);
-                        newInv.setItem(1, icon);
-                        newInv.setItem(8, back);
-                        e.getWhoClicked().openInventory(newInv);
+                if (!(e.getClickedInventory() instanceof PlayerInventory)) {
+                    int max = pl.getVarPerm("treebotrunk.barrel", (Player) e.getWhoClicked());
+                    if (e.getSlot() < max + 1) {
+                        ClickType cT = e.getClick();
+                        if (cT == ClickType.LEFT) {
+                            Bukkit.dispatchCommand(e.getWhoClicked(), "barrel " + e.getSlot());
+                        } else if (cT == ClickType.RIGHT) {
+                            Inventory newInv = Bukkit.createInventory(null, 9, pl.badge + " Configure_Barrel_" + e.getSlot() + "_" + world);
+                            ItemStack nameTag = new ItemStack(Material.NAME_TAG, 1);
+                            ItemStack icon = new ItemStack(Material.FILLED_MAP, 1);
+                            ItemStack back = new ItemStack(Material.BARRIER, 1);
+                            ItemMeta tagMeta = nameTag.getItemMeta();
+                            ItemMeta iconMeta = icon.getItemMeta();
+                            ItemMeta backMeta = back.getItemMeta();
+                            tagMeta.setDisplayName("Rename Barrel " + e.getSlot() + "_" + world);
+                            iconMeta.setDisplayName("Set icon for Barrel " + e.getSlot() + "_" + world);
+                            backMeta.setDisplayName("Return to previous menu");
+                            nameTag.setItemMeta(tagMeta);
+                            icon.setItemMeta(iconMeta);
+                            back.setItemMeta(backMeta);
+                            newInv.setItem(0, nameTag);
+                            newInv.setItem(1, icon);
+                            newInv.setItem(8, back);
+                            e.getWhoClicked().openInventory(newInv);
+                        }
                     }
                 }
             }
@@ -340,35 +350,46 @@ public class InventoryListener implements Listener {
                 e.getWhoClicked().closeInventory();
             } else {
                 e.setCancelled(true);
-                String type = e.getView().getTitle().split("_")[1].toLowerCase();
-                String uuid = e.getWhoClicked().getUniqueId().toString();
-                String slot = e.getView().getTitle().split("_")[2];
-                Inventory inv = e.getInventory();
-                if (e.getInventory().getItem(e.getSlot()) != null && e.getInventory().getItem(e.getSlot()).getType() != Material.AIR) {
-                    if (e.getInventory().getItem(e.getSlot()).getType() == Material.NAME_TAG) {
-                        e.getWhoClicked().closeInventory();
-                        e.getWhoClicked().sendMessage(pl.badge + ChatColor.GOLD + " Enter the new name for " + type + " " + slot + "_" + world);
-                        pl.getConfig().set("ListeningTo." + e.getWhoClicked().getUniqueId().toString(), true);
-                        pl.getConfig().set("ValuesFor." + e.getWhoClicked().getUniqueId().toString() + ".type", type.toLowerCase());
-                        pl.getConfig().set("ValuesFor." + e.getWhoClicked().getUniqueId().toString() + ".number", slot);
-                    } else if (e.getInventory().getItem(e.getSlot()).getType() == Material.FILLED_MAP) {
-                        ItemStack item = e.getWhoClicked().getInventory().getItemInMainHand();
-                        if (item.getType() != Material.AIR) {
-                            File invFile = new File(pl.getDataFolder() + File.separator + type + File.separator, e.getWhoClicked().getUniqueId().toString() + "_" + type + "_" + slot + "_" + world + ".yml");
-                            FileConfiguration invYaml = YamlConfiguration.loadConfiguration(invFile);
-                            invYaml.set("icon", item.getType().name().toUpperCase());
-                            try {
-                                invYaml.save(invFile);
-                            } catch (IOException err) {
-                                err.printStackTrace();
+                if (!(e.getClickedInventory() instanceof PlayerInventory)) {
+                    String type = e.getView().getTitle().split("_")[1].toLowerCase();
+                    String uuid = e.getWhoClicked().getUniqueId().toString();
+                    String slot = e.getView().getTitle().split("_")[2];
+                    Inventory inv = e.getInventory();
+                    if (e.getInventory().getItem(e.getSlot()) != null && e.getInventory().getItem(e.getSlot()).getType() != Material.AIR) {
+                        if (e.getInventory().getItem(e.getSlot()).getType() == Material.NAME_TAG) {
+                            e.getWhoClicked().closeInventory();
+                            e.getWhoClicked().sendMessage(pl.badge + ChatColor.GOLD + " Enter the new name for " + type + " " + slot + "_" + world);
+                            Bukkit.getScheduler().runTaskLaterAsynchronously(pl, new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(pl.getConfig().getBoolean("ListeningTo." + e.getWhoClicked().getUniqueId().toString())){
+                                        pl.getConfig().set("ListeningTo." + e.getWhoClicked().getUniqueId().toString(), false);
+                                        e.getWhoClicked().sendMessage(pl.badge + ChatColor.RED + " Timeout: " + ChatColor.GOLD +"No longer monitoring user input for rename.");
+                                    }
+                                }
+                            }, 300);
+                            pl.getConfig().set("ListeningTo." + e.getWhoClicked().getUniqueId().toString(), true);
+                            pl.getConfig().set("ValuesFor." + e.getWhoClicked().getUniqueId().toString() + ".type", type.toLowerCase());
+                            pl.getConfig().set("ValuesFor." + e.getWhoClicked().getUniqueId().toString() + ".number", slot);
+                        } else if (e.getInventory().getItem(e.getSlot()).getType() == Material.FILLED_MAP) {
+                            ItemStack item = e.getWhoClicked().getInventory().getItemInMainHand();
+                            if (item.getType() != Material.AIR) {
+                                File invFile = new File(pl.getDataFolder() + File.separator + type + File.separator, e.getWhoClicked().getUniqueId().toString() + "_" + type + "_" + slot + "_" + world + ".yml");
+                                FileConfiguration invYaml = YamlConfiguration.loadConfiguration(invFile);
+                                invYaml.set("icon", item.getType().name().toUpperCase());
+                                try {
+                                    invYaml.save(invFile);
+                                } catch (IOException err) {
+                                    err.printStackTrace();
+                                }
+                                e.getWhoClicked().sendMessage(pl.badge + " Icon set for " + type + " " + slot);
+                                Bukkit.dispatchCommand(e.getWhoClicked(), "" + type + "s");
+                            } else {
+                                e.getWhoClicked().sendMessage(pl.badge + " You must hold an item to use as an icon in your main hand");
                             }
-                            e.getWhoClicked().sendMessage(pl.badge + " Icon set for " + type + " " + slot);
-                            Bukkit.dispatchCommand(e.getWhoClicked(), "/" + type + "s");
-                        } else {
-                            e.getWhoClicked().sendMessage(pl.badge + " You must hold an item to use as an icon in your main hand");
+                        } else if (e.getInventory().getItem(e.getSlot()).getType() == Material.BARRIER) {
+                            Bukkit.dispatchCommand(e.getWhoClicked(), "" + type + "s");
                         }
-                    } else if (e.getInventory().getItem(e.getSlot()).getType() == Material.BARRIER) {
-                        Bukkit.dispatchCommand(e.getWhoClicked(), "/" + type + "s");
                     }
                 }
             }
@@ -388,6 +409,7 @@ public class InventoryListener implements Listener {
             invYaml.set("title", e.getMessage().replace(" ", "_").replace("'", "").replace("/", "").replace("\"", ""));
             pl.getConfig().set("ListeningTo." + p.getUniqueId().toString(), null);
             pl.getConfig().set("ValuesFor." + p.getUniqueId().toString(), null);
+            p.sendMessage(pl.badge + " Name set for " + type + " " + slot);
 
             try {
                 invYaml.save(invFile);

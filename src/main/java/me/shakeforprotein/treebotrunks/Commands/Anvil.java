@@ -1,5 +1,9 @@
 package me.shakeforprotein.treebotrunks.Commands;
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.protection.regions.RegionContainer;
+import com.sk89q.worldguard.protection.regions.RegionQuery;
 import me.shakeforprotein.treebotrunks.TreeboTrunk;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,58 +37,65 @@ public class Anvil implements CommandExecutor {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (pl.whitelistHash.containsKey(p.getLocation().getBlock().getType())) {
-                if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
-                    if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
-                        long time = System.currentTimeMillis();
-                        Location l = p.getLocation().getBlock().getLocation();
-                        pl.getConfig().set("Anvils." + time + ".X", l.getBlockX());
-                        pl.getConfig().set("Anvils." + time + ".Y", l.getBlockY());
-                        pl.getConfig().set("Anvils." + time + ".Z", l.getBlockZ());
-                        pl.getConfig().set("Anvils." + time + ".World", l.getWorld().getName());
+                LocalPlayer wgPlayer = pl.worldGuardPlugin.wrapPlayer(p);
 
-                        p.getLocation().getBlock().setType(Material.ANVIL);
-                        ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
-                        int delay = 600;
-                        as.setGravity(false); //Make sure it doesn't fall
-                        as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
-                        as.setCustomName("" + (delay / 20)); //Set this to the text you want
-                        as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
-                        as.setVisible(false);
-                        pl.getConfig().set("Anvils." + time + ".AST", as.getUniqueId());
-                        pl.astHash.putIfAbsent(as, delay / 20);
-                        BukkitRunnable runnable = new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                int currentVal = pl.astHash.get(as);
-                                if (currentVal > 0) {
-                                    currentVal--;
-                                    String newName = currentVal + "";
-                                    as.setCustomName(ChatColor.GOLD + newName);
-                                    pl.astHash.replace(as, currentVal);
-                                } else {
-                                    this.cancel();
-                                }
-                            }
-                        };
+                if (pl.hasBypass(wgPlayer, p.getLocation()) || pl.canBuild(wgPlayer, p.getLocation())) {
 
-                        runnable.runTaskTimer(pl, 20L, 20L);
-                        Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-                            @Override
-                            public void run() {
-                                int x, y, z = 0;
-                                x = pl.getConfig().getInt("Anvils." + time + ".X");
-                                y = pl.getConfig().getInt("Anvils." + time + ".Y");
-                                z = pl.getConfig().getInt("Anvils." + time + ".Z");
-                                String world = pl.getConfig().getString("Anvils." + time + ".World");
-                                Location loc = new Location(Bukkit.getWorld(world), x, y, z);
-                                loc.getBlock().setType(Material.AIR);
-                                if (pl.getConfig().getString("Anvils." + time + ".AST") != null) {
-                                    Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("Anvils." + time + ".AST"))).remove();
+                    if (!p.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
+                        if (!p.getLocation().subtract(0, 1, 0).getBlock().isLiquid()) {
+                            long time = System.currentTimeMillis();
+                            Location l = p.getLocation().getBlock().getLocation();
+                            pl.getConfig().set("Anvils." + time + ".X", l.getBlockX());
+                            pl.getConfig().set("Anvils." + time + ".Y", l.getBlockY());
+                            pl.getConfig().set("Anvils." + time + ".Z", l.getBlockZ());
+                            pl.getConfig().set("Anvils." + time + ".World", l.getWorld().getName());
+
+                            p.getLocation().getBlock().setType(Material.ANVIL);
+                            ArmorStand as = (ArmorStand) l.getWorld().spawnEntity(l.add(0.5, -0.5, 0.5), EntityType.ARMOR_STAND); //Spawn the ArmorStand
+                            int delay = 600;
+                            as.setGravity(false); //Make sure it doesn't fall
+                            as.setCanPickupItems(false); //I'm not sure what happens if you leave this as it is, but you might as well disable it
+                            as.setCustomName("" + (delay / 20)); //Set this to the text you want
+                            as.setCustomNameVisible(true); //This makes the text appear no matter if your looking at the entity or not
+                            as.setVisible(false);
+                            pl.getConfig().set("Anvils." + time + ".AST", as.getUniqueId());
+                            pl.astHash.putIfAbsent(as, delay / 20);
+                            BukkitRunnable runnable = new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    int currentVal = pl.astHash.get(as);
+                                    if (currentVal > 0) {
+                                        currentVal--;
+                                        String newName = currentVal + "";
+                                        as.setCustomName(ChatColor.GOLD + newName);
+                                        pl.astHash.replace(as, currentVal);
+                                    } else {
+                                        this.cancel();
+                                    }
                                 }
-                                pl.getConfig().set("Anvils." + time, null);
-                            }
-                        }, delay);
+                            };
+
+                            runnable.runTaskTimer(pl, 20L, 20L);
+                            Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+                                @Override
+                                public void run() {
+                                    int x, y, z = 0;
+                                    x = pl.getConfig().getInt("Anvils." + time + ".X");
+                                    y = pl.getConfig().getInt("Anvils." + time + ".Y");
+                                    z = pl.getConfig().getInt("Anvils." + time + ".Z");
+                                    String world = pl.getConfig().getString("Anvils." + time + ".World");
+                                    Location loc = new Location(Bukkit.getWorld(world), x, y, z);
+                                    loc.getBlock().setType(Material.AIR);
+                                    if (pl.getConfig().getString("Anvils." + time + ".AST") != null) {
+                                        Bukkit.getEntity(UUID.fromString(pl.getConfig().getString("Anvils." + time + ".AST"))).remove();
+                                    }
+                                    pl.getConfig().set("Anvils." + time, null);
+                                }
+                            }, delay);
+                        }
                     }
+                } else {
+                    p.sendMessage(pl.badge + pl.err + "You are not entitled to build here");
                 }
             }
         } else {
