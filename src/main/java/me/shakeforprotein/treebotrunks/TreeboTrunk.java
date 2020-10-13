@@ -5,7 +5,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.bukkit.BukkitUtil;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
@@ -13,6 +12,7 @@ import me.shakeforprotein.treebotrunks.Commands.*;
 import me.shakeforprotein.treebotrunks.Listeners.InventoryListener;
 import me.shakeforprotein.treebotrunks.Listeners.JoinListener;
 import me.shakeforprotein.treebotrunks.SpigotUpdateChecker.SpigotUpdateChecker;
+import me.shakeforprotein.treebotrunks.Commands.Furnace2;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,6 +45,8 @@ public final class TreeboTrunk extends JavaPlugin {
     public WorldGuardPlugin worldGuardPlugin = WorldGuardPlugin.inst();
     public WorldEdit worldEdit = WorldEdit.getInstance();
     public WorldEditPlugin worldEditPlugin = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+    private Furnace2 furnace2;
+
 
     @Override
     public void onEnable() {
@@ -52,6 +54,7 @@ public final class TreeboTrunk extends JavaPlugin {
         getConfig().set("version", this.getDescription().getVersion());
         saveConfig();
         Logger logger = this.getLogger();
+        furnace2 = new Furnace2(this);
         this.getCommand("addtrunk").setExecutor(new AddTrunk(this));
         this.getCommand("barrel").setExecutor(new Barrel(this));
         this.getCommand("chest").setExecutor(new Chest(this));
@@ -67,6 +70,7 @@ public final class TreeboTrunk extends JavaPlugin {
         this.getCommand("brew").setExecutor(new BrewingStand(this));
         this.getCommand("smoker").setExecutor(new Smoker(this));
         this.getCommand("furnace").setExecutor(new Furnace(this));
+        this.getCommand("furnace2").setExecutor(furnace2);
         this.getCommand("blastfurnace").setExecutor(new BlastFurnace(this));
         this.getCommand("chests").setExecutor(new Chests(this));
         this.getCommand("belts").setExecutor(new Belts(this));
@@ -74,6 +78,8 @@ public final class TreeboTrunk extends JavaPlugin {
 
         Bukkit.getPluginManager().registerEvents(new InventoryListener(this), this);
         Bukkit.getPluginManager().registerEvents(new JoinListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new Furnace2(this), this);
+
         if (getConfig().get("bstatsIntegration") != null) {
             if (getConfig().getBoolean("bstatsIntegration")) {
                 Metrics metrics = new Metrics(this);
@@ -106,7 +112,10 @@ public final class TreeboTrunk extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            furnace2.saveHashes(p);
+        }
         saveConfig();
     }
 

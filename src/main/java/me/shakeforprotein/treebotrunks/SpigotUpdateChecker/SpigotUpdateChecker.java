@@ -3,7 +3,7 @@ package me.shakeforprotein.treebotrunks.SpigotUpdateChecker;
 import me.shakeforprotein.treebotrunks.TreeboTrunk;
 import org.bukkit.Bukkit;
 import org.bukkit.util.Consumer;
-import sun.reflect.generics.tree.Tree;
+
 
 import java.io.IOException;
 import java.io.InputStream;

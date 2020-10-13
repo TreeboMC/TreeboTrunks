@@ -45,29 +45,31 @@ public class InventoryListener implements Listener {
         String title = ChatColor.stripColor(e.getView().getTitle());
         if (title.toLowerCase().contains(ChatColor.stripColor(pl.badge).toLowerCase()) && !title.startsWith(ChatColor.stripColor(pl.badge + " Your ")) && !title.startsWith(ChatColor.stripColor(pl.badge + " Configure_"))) {
             e.getPlayer().sendMessage(pl.badge + "Saved Inventory.");
-            String type = title.split("_")[1];
-            if (!type.equalsIgnoreCase("trash")) {
-                String fileName = e.getView().getTitle().replace(pl.badge, "");
-                File theFile = new File(pl.getDataFolder() + File.separator + type + File.separator, e.getPlayer().getUniqueId().toString() + "_" + type + "_" + title.split("_")[2] + "_" + world + ".yml");
-                FileConfiguration theYaml = YamlConfiguration.loadConfiguration(theFile);
-                int slot = 0;
-                for (slot = 0; slot < e.getInventory().getSize(); slot++) {
-                    theYaml.set("Inventory.slot_" + slot + ".slot", slot);
-                    theYaml.set("Inventory.slot_" + slot + ".item", e.getInventory().getItem(slot));
-                }
-                if (theYaml.getString("icon") == null) {
-                    if (type.equalsIgnoreCase("chest")) {
-                        theYaml.set("icon", "CHEST");
-                    } else if (type.equalsIgnoreCase("barrel")) {
-                        theYaml.set("icon", "BARREL");
-                    } else if (type.equalsIgnoreCase("belt")) {
-                        theYaml.set("icon", "LEAD");
+            if(title.split("_").length > 1) {
+                String type = title.split("_")[1];
+                if (!type.equalsIgnoreCase("trash")) {
+                    String fileName = e.getView().getTitle().replace(pl.badge, "");
+                    File theFile = new File(pl.getDataFolder() + File.separator + type + File.separator, e.getPlayer().getUniqueId().toString() + "_" + type + "_" + title.split("_")[2] + "_" + world + ".yml");
+                    FileConfiguration theYaml = YamlConfiguration.loadConfiguration(theFile);
+                    int slot = 0;
+                    for (slot = 0; slot < e.getInventory().getSize(); slot++) {
+                        theYaml.set("Inventory.slot_" + slot + ".slot", slot);
+                        theYaml.set("Inventory.slot_" + slot + ".item", e.getInventory().getItem(slot));
                     }
-                }
-                try {
-                    theYaml.save(theFile);
-                } catch (IOException err) {
-                    pl.getLogger().warning(pl.badge + "Error saving inventory " + type + " " + title.split("_")[2] + " for " + e.getPlayer().getName() + " - " + e.getPlayer().getUniqueId().toString());
+                    if (theYaml.getString("icon") == null) {
+                        if (type.equalsIgnoreCase("chest")) {
+                            theYaml.set("icon", "CHEST");
+                        } else if (type.equalsIgnoreCase("barrel")) {
+                            theYaml.set("icon", "BARREL");
+                        } else if (type.equalsIgnoreCase("belt")) {
+                            theYaml.set("icon", "LEAD");
+                        }
+                    }
+                    try {
+                        theYaml.save(theFile);
+                    } catch (IOException err) {
+                        pl.getLogger().warning(pl.badge + "Error saving inventory " + type + " " + title.split("_")[2] + " for " + e.getPlayer().getName() + " - " + e.getPlayer().getUniqueId().toString());
+                    }
                 }
             }
         }

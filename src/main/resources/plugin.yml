@@ -5,7 +5,7 @@ api-version: 1.13
 authors: [ShakeforProtein]
 description: Mass virtual chest storage
 website: http://treebomc.com
-depend: [WorldGuard, WorldEdit]
+softdepend: [WorldGuard, WorldEdit]
 
 commands:
   belt:
@@ -54,6 +54,9 @@ commands:
   furnace:
     permission: treebotrunk.furnace
     usage: "/furnace"
+  furnace2:
+    permission: treebotrunk.furnace
+    usage: "/furnace2"
     description: "Temporarily Places a Furnace at your feet if the block is clear"
   blastfurnace:
     permission: treebotrunk.blastfurnace
